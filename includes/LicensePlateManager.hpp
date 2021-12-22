@@ -38,7 +38,7 @@ class LicensePlateManager {
         * Adds a license plate to plates_
             * @param plate The LicensePlateInfo to add to plates_
         */
-        void AddPlate(const LicensePlateInfo& plate);
+        bool AddPlate(const LicensePlateInfo& plate);
 
         /*
         * Updates the license plate number with the LicensePlateInfo matches the driver's name
@@ -81,14 +81,14 @@ class LicensePlateManager {
             * @param plate_number The license plate number to search for
             * @return A LicensePlate with a matching plate_number or nullptr if there is no match.
         */
-        LicensePlateInfo *FindLicensePlate(std::string plate_number);
+        LicensePlateInfo FindLicensePlate(std::string plate_number);
 
         /*
         * Finds a license plate based on the name of the driver
             * @param driver's full name 
             * @return A LicensePlate if found a match else returns a nullptr
         */
-        LicensePlateInfo *FindLicensePlate(std::string first_name, std::string last_name);
+        std::vector<LicensePlateInfo> FindLicensePlate(const std::string&, const std::string&);
 
         /*
         * Checks a given license plate is a valid Illinois license plate.
@@ -151,6 +151,7 @@ class LicensePlateManager {
         */
         std::string ScanPlate(const std::string& filename);
 
+
     private:
         PlateNumber initial_serial_ = "AQ11001";                 //The initial serial number to generate plate numbers from
         PlateNumber last_serial_ = "";                        //The last serial number that was automatically generated
@@ -162,6 +163,8 @@ class LicensePlateManager {
         * @param number The plate number to be incremented
         */
         std::string IncrementPlateNumber(std::string number);
+
+        void GetDataQuery(const std::string& query, char ***result, int& row, int& col, const std::string& op);
 };
 
 /*
@@ -169,14 +172,14 @@ class LicensePlateManager {
 * @param os indicates which output stream will be used 
 * @param lpi is a pointer pointing to a license plate to be printed
 */
-std::ostream& operator<< (std::ostream& os, const LicensePlateInfo * lpi);
+std::ostream& operator<< (std::ostream& os, const LicensePlateInfo lpi);
 
 /*
 * Helper function for printing out the information of a license plate
 * @param os indicates which output stream will be used 
 * @param plates_vec is a vector of license plates to be printed
 */
-std::ostream& operator<< (std::ostream& os, const std::vector<std::pair<PlateNumber, LicensePlateInfo*>>& plates_vec);
+std::ostream& operator<< (std::ostream& os, const std::vector<LicensePlateInfo>& plates_vec);
 
 /*
 * Checks if a license plate number already exists in the manager.
