@@ -20,6 +20,7 @@ int main(int argc, char *argv[]) {
         // LicensePlateInfo a = manager->FindLicensePlate("AQ11010");
         // std::cout << a;
         // std::cout << manager->RemovePlate("AQ11002");
+        manager->UpdateWeight("AQ12345", 333);
         std::vector<LicensePlateInfo> a = manager->FindLicensePlate("Jimin", "Kim"); 
         std::cout << a;
     }

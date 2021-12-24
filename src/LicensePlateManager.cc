@@ -1,5 +1,6 @@
 #include "LicensePlateManager.hpp"
 
+
 static std::string valid_numbers = "0123456789";
 static std::string valid_chars   = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -22,91 +23,135 @@ LicensePlateManager::~LicensePlateManager() {
     sqlite3_close(db_);
 }
 
-// void LicensePlateManager::UpdateLicensePlate(std::string first_name, std::string last_name, PlateNumber plate_number) {
-//     bool found_driver = false;
-//     if (first_name.length() == 0 || last_name.length() == 0) {
-//         throw std::runtime_error("Invalid name");
-//     }
-//     if (!IsUniqueNumber(plate_number)) {
-//         throw std::runtime_error("Plate number already exists, cannot be updated/repeated");
-//     }
-// /*     for (auto it = plates_.begin(); it != plates_.end(); ++it) {
-//         if (it->second->first_name == first_name && it->second->last_name == last_name) {
-//             found_driver = true;
-//             it->second->plate_number = plate_number;
-//             std::swap(plates_[plate_number], it->second);
-//             plates_.erase(it);
-//             return;
-//         }
-//     }
-//     if (found_driver == false) {
-//         throw std::runtime_error("The driver does not exist in the system");
-//     } */
-// }
+bool LicensePlateManager::IsCorrectFormat(const PlateNumber& plate_number) {
+    if (plate_number.size() == 7) {
+        for (size_t i = 0; i < plate_number.size(); ++i) {
+            if (i < 2 && valid_chars.find(plate_number[i]) == std::string::npos)
+                return false;
+            if (i >= 2 && valid_numbers.find(plate_number[i]) == std::string::npos)
+                return false;
+        }
+    }
+    else 
+        return false;
+    return true;
+}
 
-// void LicensePlateManager::UpdateAddress(PlateNumber plate_number, std::string update_address) {
-//     if (update_address.length() == 0) {
-//         throw std::runtime_error("Invalid Address");
-//     }
-//    if (IsUniqueNumber(plate_number)) {
-//         throw std::runtime_error("Passed in plate number does not exist in the system");
-//     }
-//     for (auto it = plates_.begin(); it != plates_.end(); ++it) {
-//         if (it->first == plate_number) {
-//             it->second->address = update_address;
-//         }
-//     }
-// }
+void LicensePlateManager::UpdateLicensePlate(const PlateNumber& old_plate_number, const PlateNumber& new_plate_number) {
+    if(!IsCorrectFormat(old_plate_number) || !IsCorrectFormat(new_plate_number))
+        throw std::runtime_error("Plate number(s) is(are) not in correct serial format!");
 
-// void LicensePlateManager::UpdateAge(PlateNumber plate_number, int update_age) {
-//     if (update_age < 18) {
-//         throw std::runtime_error("Invalid age");
-//     }
-//     if (IsUniqueNumber(plate_number)) {
-//         throw std::runtime_error("Passed in plate number does not exist in the system");
-//     }
-//     for (auto it = plates_.begin(); it != plates_.end(); ++it) {
-//         if (it->first == plate_number) {
-//             if (it->second->age > update_age) {
-//                 throw std::runtime_error("Boo, How do you grow backwards?");
-//             } else {
-//                 it->second->age = update_age;
-//             }
-//         }
-//     }
-// }
+    if (!IsUniqueNumber(new_plate_number))
+        throw std::runtime_error("New plate number already exists, cannot be updated/repeated");
 
-// void LicensePlateManager::UpdateHeight(PlateNumber plate_number, double update_height) {
-//     if (update_height < 0) {
-//         throw std::runtime_error("Invalid height");
-//     }
-//     if (IsUniqueNumber(plate_number)) {
-//         throw std::runtime_error("Passed in plate number does not exist in the system");
-//     }
-//     for (auto it = plates_.begin(); it != plates_.end(); ++it) {
-//         if (it->first == plate_number) {
-//             if (it->second->height > update_height) {
-//                 throw std::runtime_error("Boo, How do you grow backwards?");
-//             } else {
-//                 it->second->height = update_height;
-//             }
-//         }
-//     }
-// }
+    try {
+        FindLicensePlate(old_plate_number);
+    }
+    catch (...) {
+        throw;
+    }
 
-// void LicensePlateManager::UpdateWeight(PlateNumber plate_number, double update_weight) {
-//     if (update_weight < 0) {
-//         throw std::runtime_error("Invalid weight");
-//     }
-//     if (IsUniqueNumber(plate_number)) {
-//         throw std::runtime_error("Passed in plate number does not exist in the system");
-//     }
-//     for (auto it = plates_.begin(); it != plates_.end(); ++it) {
-//         if (it->first == plate_number) {
-//             it->second->weight = update_weight;
-//         }
-//     }
-// }
+    char **result = 0;    /* Results of the query */
+    int row = 0, col = 0;
+    std::string query = "UPDATE LicensePlate SET plate = '" + new_plate_number + "' WHERE plate = '" + old_plate_number + "';"  +
+                        "SELECT * FROM LicensePlate WHERE plate = '" + new_plate_number + "'";
+    GetDataQuery(query, &result, row, col, "UpdateLicensePlate()");
+    if (row <= 0) {
+        sqlite3_free_table(result);
+        throw std::runtime_error("Failed to update");
+    }
+    sqlite3_free_table(result);
+}
+
+void LicensePlateManager::UpdateAddress(const PlateNumber& plate_number, const std::string& new_address) {
+    if (new_address.empty()) 
+        throw std::runtime_error("Invalid Address");
+
+    if (!IsCorrectFormat(plate_number))
+        throw std::runtime_error("Invalid plate number");
+
+    if (IsUniqueNumber(plate_number))
+        throw std::runtime_error("Passed in plate number does not exist in the system");
+
+    char **result = 0;    /* Results of the query */
+    int row = 0, col = 0;
+    std::string query = "UPDATE LicensePlate SET address = '" + new_address + "' WHERE plate = '" + plate_number + "';"  +
+                        "SELECT address FROM LicensePlate WHERE plate = '" + plate_number + "'";
+    GetDataQuery(query, &result, row, col, "UpdateAddress()");
+    if (row <= 0 || result[1] != new_address) {
+        sqlite3_free_table(result);
+        throw std::runtime_error("Failed to update");
+    }
+    sqlite3_free_table(result);
+}
+
+void LicensePlateManager::UpdateAge(const PlateNumber& plate_number, int update_age) {
+    if (update_age < 18)
+        throw std::runtime_error("Invalid age");
+
+    if (!IsCorrectFormat(plate_number))
+        throw std::runtime_error("Invalid plate number");
+
+    if (IsUniqueNumber(plate_number))
+        throw std::runtime_error("Passed in plate number does not exist in the system");
+
+    char **result = 0;    /* Results of the query */
+    int row = 0, col = 0;
+    
+    std::string query = "UPDATE LicensePlate SET age = '" + std::to_string(update_age) + "' WHERE plate = '" + plate_number + "';"  +
+                        "SELECT age FROM LicensePlate WHERE plate = '" + plate_number + "'";
+    GetDataQuery(query, &result, row, col, "UpdateAge()");
+    if (row <= 0 || atoi(result[1]) != update_age) {
+        sqlite3_free_table(result);
+        throw std::runtime_error("Failed to update");
+    }
+    sqlite3_free_table(result);
+}
+
+void LicensePlateManager::UpdateHeight(const PlateNumber& plate_number, double update_height) {
+    if (update_height < 0)
+        throw std::runtime_error("Invalid height");
+
+    if (!IsCorrectFormat(plate_number))
+        throw std::runtime_error("Invalid plate number");
+
+    if (IsUniqueNumber(plate_number))
+        throw std::runtime_error("Passed in plate number does not exist in the system");
+
+    char **result = 0;    /* Results of the query */
+    int row = 0, col = 0;
+    
+    std::string query = "UPDATE LicensePlate SET height = '" + std::to_string(update_height) + "' WHERE plate = '" + plate_number + "';"  +
+                        "SELECT height FROM LicensePlate WHERE plate = '" + plate_number + "'";
+    GetDataQuery(query, &result, row, col, "UpdateHeight()");
+    if (row <= 0 || abs(atof(result[1]) - update_height) > ZERO) {
+        sqlite3_free_table(result);
+        throw std::runtime_error("Failed to update");
+    }
+    sqlite3_free_table(result);
+}
+
+void LicensePlateManager::UpdateWeight(const PlateNumber& plate_number, double update_weight) {
+    if (update_weight < 0)
+        throw std::runtime_error("Invalid weight");
+
+    if (!IsCorrectFormat(plate_number))
+        throw std::runtime_error("Invalid plate number");
+
+    if (IsUniqueNumber(plate_number))
+        throw std::runtime_error("Passed in plate number does not exist in the system");
+
+    char **result = 0;    /* Results of the query */
+    int row = 0, col = 0;
+    std::string query = "UPDATE LicensePlate SET weight = '" + std::to_string(update_weight) + "' WHERE plate = '" + plate_number + "';"  +
+                        "SELECT weight FROM LicensePlate WHERE plate = '" + plate_number + "'";
+    GetDataQuery(query, &result, row, col, "UpdateHeight()");
+    if (row <= 0 || abs(atof(result[1]) - update_weight) > ZERO ) {
+        sqlite3_free_table(result);
+        throw std::runtime_error("Failed to update");
+    }
+    sqlite3_free_table(result);
+}
 
 void LicensePlateManager::GetDataQuery(const std::string& query, char ***result, int& row, int& col, const std::string& op) {
     char *err_msg = 0;
@@ -120,7 +165,7 @@ void LicensePlateManager::GetDataQuery(const std::string& query, char ***result,
 
 }
 
-LicensePlateInfo LicensePlateManager::FindLicensePlate(std::string plate_number) {
+LicensePlateInfo LicensePlateManager::FindLicensePlate(const std::string& plate_number) {
     if (plate_number.size() != 7)
         throw std::runtime_error("Passed in an invalid license plate");
     char **result = 0;    /* Results of the query */
@@ -178,7 +223,7 @@ bool LicensePlateManager::IsValid(const LicensePlateInfo& plate) {
     return true;
 }
 
-bool LicensePlateManager::IsUniqueNumber(std::string number) {
+bool LicensePlateManager::IsUniqueNumber(const std::string& number) {
     if (number.empty())
         return false;
     char **result = 0;    /* Results of the query */
@@ -211,8 +256,8 @@ bool LicensePlateManager::AddPlate(const LicensePlateInfo& plate) {
         return false;
 }
 
-LicensePlateInfo LicensePlateManager::CreatePlate(PlateNumber plate_number, std::string first_name, std::string last_name, int age, std::string date_of_birth,
-                            std::string address, double height, double weight) {
+LicensePlateInfo LicensePlateManager::CreatePlate(const PlateNumber& plate_number, const std::string& first_name, const std::string& last_name, 
+                                                int age, const std::string& date_of_birth, const std::string& address, double height, double weight) {
     
     LicensePlateInfo new_plate (plate_number, first_name, last_name, date_of_birth, address, age, height, weight);
     if (!IsValid(new_plate) || !IsUniqueNumber(plate_number)) 
@@ -223,8 +268,8 @@ LicensePlateInfo LicensePlateManager::CreatePlate(PlateNumber plate_number, std:
     return new_plate;
 }
 
-LicensePlateInfo LicensePlateManager::GeneratePlate(std::string first_name, std::string last_name, int age, std::string date_of_birth,
-                            std::string address, double height, double weight) {
+LicensePlateInfo LicensePlateManager::GeneratePlate(const std::string& first_name, const std::string& last_name, int age, 
+                                                    const std::string& date_of_birth, const std::string& address, double height, double weight) {
     PlateNumber plate_number = GeneratePlateNumber();
     LicensePlateInfo new_plate(plate_number, first_name, last_name, date_of_birth, address, age, height, weight);
     if (!IsValid(new_plate))
@@ -255,7 +300,7 @@ PlateNumber LicensePlateManager::GeneratePlateNumber() {
     return plate_number;
 }
 
-std::string LicensePlateManager::IncrementPlateNumber(std::string number) {
+std::string LicensePlateManager::IncrementPlateNumber(PlateNumber number) {
     size_t i = 6;                                 //start at end of string
     
     while(i >= 2) {                                  //currently on number indices 2-6
@@ -290,7 +335,7 @@ std::string LicensePlateManager::IncrementPlateNumber(std::string number) {
 
 
 
-bool LicensePlateManager::RemovePlate(std::string plate_number) {
+bool LicensePlateManager::RemovePlate(const std::string& plate_number) {
     try {
         FindLicensePlate(plate_number);
     }
@@ -308,7 +353,7 @@ bool LicensePlateManager::RemovePlate(std::string plate_number) {
     return false;
 }
 
-std::ostream& operator<< (std::ostream& os, const LicensePlateInfo lpi) {
+std::ostream& operator<< (std::ostream& os, const LicensePlateInfo& lpi) {
     os << "Plate number: " << lpi.plate_number << std::endl;
     os << "First name: " << lpi.first_name << std::endl;
     os << "Last name: " << lpi.last_name << std::endl;
