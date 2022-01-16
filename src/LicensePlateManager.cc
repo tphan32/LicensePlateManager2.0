@@ -9,11 +9,10 @@ LicensePlateManager::LicensePlateManager(char* filename) {
         db_ = NULL;
     } else {
         int rc = sqlite3_open(filename, &db_);
-        if(rc < 0)
-            throw std::runtime_error("could not open file");
+        if(rc)
+            throw std::runtime_error("Could not load the database");
         else
             std::cout << "Successfully connected to the databse." << std::endl;
-
     }
 }
 
@@ -162,7 +161,6 @@ void LicensePlateManager::GetDataQuery(const std::string& query, char ***result,
     } 
     else
         std::cout << op << " operation executed successfully\n";
-
 }
 
 LicensePlateInfo LicensePlateManager::FindLicensePlate(const std::string& plate_number) {
@@ -188,9 +186,7 @@ std::vector<LicensePlateInfo> LicensePlateManager::FindLicensePlate(const std::s
     char **result = 0;    /* Results of the query */
     int row = 0, col = 0;
 
-    std::string query = "SELECT * FROM LicensePlate \
-                         WHERE first_name = '" + first_name + "' AND last_name = '" + last_name + "' \
-                         ORDER BY plate ASC";
+    std::string query = "SELECT * FROM LicensePlate WHERE first_name = '" + first_name + "' AND last_name = '" + last_name + "' ORDER BY plate ASC";
     GetDataQuery(query, &result, row, col, "Find");
     if (row < 1) {
         sqlite3_free_table(result);
@@ -204,6 +200,14 @@ std::vector<LicensePlateInfo> LicensePlateManager::FindLicensePlate(const std::s
     }
     sqlite3_free_table(result);
     return ret;    
+}
+
+size_t LicensePlateManager::GetSize() {
+    char **result = 0;    /* Results of the query */
+    int row = 0, col = 0;
+    std::string query = "SELECT * FROM LicensePlate";
+    GetDataQuery(query, &result, row, col, "Find");
+    return row;
 }
 
 bool LicensePlateManager::IsValid(const LicensePlateInfo& plate) {    
@@ -237,6 +241,7 @@ bool LicensePlateManager::IsUniqueNumber(const std::string& number) {
     return false;
 }
 
+
 bool LicensePlateManager::AddPlate(const LicensePlateInfo& plate) {
     char *sql;
     char *err_msg = 0;
@@ -255,6 +260,7 @@ bool LicensePlateManager::AddPlate(const LicensePlateInfo& plate) {
     else
         return false;
 }
+
 
 LicensePlateInfo LicensePlateManager::CreatePlate(const PlateNumber& plate_number, const std::string& first_name, const std::string& last_name, 
                                                 int age, const std::string& date_of_birth, const std::string& address, double height, double weight) {
@@ -390,3 +396,4 @@ std::string LicensePlateManager::ScanPlate(const std::string& filename) {
     img.close();
     return out;
 }
+

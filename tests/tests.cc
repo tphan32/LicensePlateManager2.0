@@ -1,8 +1,8 @@
 // clang-format off
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
-//  Written By : Student Name                    Environment : ubuntu:bionic               //
-//  Date ......: 2021/02/10                      Compiler ...: clang-10                    //
+//  Written By : TRUNG TINH PHAN                 Environment : ubuntu:bionic               //
+//  Date ......: 2022/01/16                      Compiler ...: clang-10                    //
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 // clang-format on
@@ -25,92 +25,6 @@
 /////////////////////////////////////////////////////////////////////////////////////////////
 //                                Test Cases //
 /////////////////////////////////////////////////////////////////////////////////////////////
-
-// TEST_CASE("Parameterized constructor", "[Constructor]") { 
-//     SECTION("Empty file") {
-//         LicensePlateManager manager("");
-//         REQUIRE(manager.GetPlates().size() == 0);
-//     }
-//     SECTION("Small file") {
-//         LicensePlateManager manager("data/data_info.csv");
-//         REQUIRE_FALSE(manager.GetPlates().empty());
-//     }
-// }
-
-// TEST_CASE("Plates Successfully Loaded to Manager", "[LoadPlates()]") {
-//     std::ostringstream ss;
-
-//     LicensePlateManager manager;
-//     manager.LoadPlates("data/data_info.csv");
-//     REQUIRE(!manager.GetPlates().empty());
-//     std::map<PlateNumber, LicensePlateInfo*> sample = {};
-//     std::map<PlateNumber, LicensePlateInfo*> stored = manager.GetPlates();
-//     LicensePlateInfo* info = new LicensePlateInfo("CD80519", "Michael", "Nowak", "03/21/1987", "Round Rock, Texas, United States", 34, 6.1, 180);
-//     sample.insert(std::pair<PlateNumber, LicensePlateInfo*> ("CD80519", info));
-//     LicensePlateInfo* info1 = new LicensePlateInfo("AQ11010", "Michaeler", "Bowaker", "03/22/1987", "Square Rock, Texas, United States", 34, 6.1, 180);
-//     sample.insert(std::pair<PlateNumber, LicensePlateInfo*> ("AQ11010", info1));
-//     LicensePlateInfo* info2 = new LicensePlateInfo("AQ11012", "Nathan", "Park", "11/22/2021", "106 E University Ave, Urbana, IL 61801", 21, 6.6, 100);
-//     sample.insert(std::pair<PlateNumber, LicensePlateInfo*> ("AQ11012", info2));
-//     bool result = true;
-//     for (auto it = stored.begin(); it != stored.end(); ++it) {
-//         auto iter = sample[it->first];
-//         if (it->second->plate_number != iter->plate_number) {
-//             result = false;
-//         }
-//     }
-//     REQUIRE(result == true);
-
-//     SECTION("Load single entry") {
-//         LicensePlateManager manager;
-//         manager.LoadPlates("data/one_entry.csv");
-//         std::map<PlateNumber, LicensePlateInfo*> stored = manager.GetPlates();
-//         ss << stored.begin()->second;
-//         std::string ans = "Plate number: CD80519\nFirst name: Michael\nLast name: Nowak\nDoB: 03/21/1987\nAddress: Round Rock, Texas, United States\nAge: 34\nHeight: 6.1\nWeight: 180\n";
-//         REQUIRE(ss.str() == ans);
-//     }
-
-//     SECTION("Open nonexistent file") {
-//         LicensePlateManager manager;
-//         CHECK_THROWS(manager.LoadPlates("data/aaa.csv"));
-//     }
-
-//     SECTION("File contains no valid entries") {
-//         LicensePlateManager manager;
-//         CHECK_THROWS(manager.LoadPlates("data/invalid_entry.csv"));
-//     }
-
-//     SECTION("File contains one invalid entry") {
-//         LicensePlateManager manager;
-//         CHECK_THROWS(manager.LoadPlates("data/valid_invalid_entries.csv"));
-//         std::map<PlateNumber, LicensePlateInfo*> stored = manager.GetPlates();
-//         ss << stored.begin()->second;
-//         std::string ans = "Plate number: CD80519\nFirst name: Pikachu\nLast name: Chuchu\nDoB: 03/21/1966\nAddress: Kanto\nAge: 50\nHeight: 1.1\nWeight: 200\n";
-//         REQUIRE(ss.str() == ans);
-//         REQUIRE(stored.size() == 1);
-//     }
-
-//     SECTION("LoadPlates doesn't overwrite current data") {
-//         LicensePlateManager manager;
-//         manager.CreatePlate("AQ11011", "Nathan", "Park", 18, "12/21/1221", "201 N Goodwin Ave, Urbana, IL 61801", 7, 300);
-//         manager.LoadPlates("data/data_info.csv");
-//         auto data = manager.GetPlates();
-//         REQUIRE(data.size() == 4);
-//         std::string ans = "Plate number: AQ11011\nFirst name: Nathan\nLast name: Park\nDoB: 12/21/1221\nAddress: 201 N Goodwin Ave, Urbana, IL 61801\nAge: 18\nHeight: 7\nWeight: 300\n";
-//         ss << data["AQ11011"];
-//         REQUIRE(ss.str() == ans);
-//     }
-
-//     SECTION("Invalid data doesn't overwrite current data") {
-//         REQUIRE_THROWS(manager.LoadPlates("data/invalid_entry.csv"));
-//         REQUIRE(manager.GetPlates().size() == 3);
-//     }
-
-//     SECTION("LoadPlates() ignores entries with invalid formatting") {
-//         LicensePlateManager manager;
-//         manager.LoadPlates("data/test_ignore.csv");
-//         REQUIRE(manager.GetPlates().size() == 3);
-//     }
-// }
 
 // TEST_CASE("Insertion of a duplicate license plate number is rejected", "[CreatePlate()]") { 
 //     std::ostringstream ss;
@@ -165,282 +79,200 @@
 //     }
 // }
 
-// TEST_CASE("Renmove license plates", "[Insertion/Deletion]") {
-//     SECTION("Remove empty list") {
-//         LicensePlateManager manager;
-//         REQUIRE_FALSE(manager.RemovePlate("BM23586"));
-//     }
+TEST_CASE("Renmove license plates", "[Insertion/Deletion]") {
+    LicensePlateManager manager("data/license_plate.db");
+    SECTION("Remove empty list") {
+        REQUIRE_THROWS(manager.RemovePlate("BM23596"));
+    }
 
-//     SECTION("Remove an entry") {
-//         LicensePlateManager manager;
-//         LicensePlateInfo *d = new LicensePlateInfo("BM23586", "Post", "Malone",  "07/04/1995", "Syracuse, New York",26, 6.1, 250) ;
-//         manager.AddPlate(d);
-//         REQUIRE(manager.GetPlates().size() == 1);
-//         REQUIRE(manager.RemovePlate("BM23586"));
-//         REQUIRE(manager.GetPlates().size() == 0);
-//     }
+    SECTION("Remove an entry") {
+        LicensePlateInfo d("BM23586", "Post", "Malone",  "07/04/1995", "Syracuse, New York",26, 6.1, 250) ;
+        size_t original_size = manager.GetSize(); 
+        manager.AddPlate(d);
+        REQUIRE(manager.GetSize() == original_size+1);
+        REQUIRE(manager.RemovePlate("BM23586"));
+        REQUIRE(manager.GetSize() == original_size);
+    }
 
-//     SECTION("Remove multiple entries") {
-//         LicensePlateManager manager;
-//         LicensePlateInfo *a = new LicensePlateInfo("AQ11001", "Michealer", "Nowaker", "11/11/1920", "Chicago, Illinois", 101, 200, 125) ;
-//         LicensePlateInfo *b = new LicensePlateInfo("AM51021", "Ed", "Sheeran", "01/12/1987", "Mars", 34, 6, 200) ;
-//         LicensePlateInfo *c = new LicensePlateInfo("AO20198", "The", "Weaken", "01/12/1965", "Las Vegas, Neveda",34, 6, 150) ;
-//         LicensePlateInfo *d = new LicensePlateInfo("BM23586", "Post", "Malone",  "07/04/1995", "Syracuse, New York",26, 6.1, 250) ;
-//         manager.AddPlate(a); manager.AddPlate(b); manager.AddPlate(c); manager.AddPlate(d);
-//         REQUIRE(manager.GetPlates().size() == 4);
-//         REQUIRE(manager.RemovePlate("AM51021"));
-//         REQUIRE(manager.RemovePlate("AO20198"));
-//         REQUIRE(manager.GetPlates().size() == 2);
-//         REQUIRE(manager.RemovePlate("BM23586"));
-//         REQUIRE(manager.GetPlates().size() == 1);
-//     }
+    SECTION("Remove multiple entries") {
+        LicensePlateInfo b ("AM51021", "Ed", "Sheeran", "01/12/1987", "Mars", 34, 6, 200) ;
+        LicensePlateInfo c ("AO20198", "The", "Weaken", "01/12/1965", "Las Vegas, Neveda",34, 6, 150) ;
+        LicensePlateInfo d ("BM23586", "Post", "Malone",  "07/04/1995", "Syracuse, New York",26, 6.1, 250) ;
+        manager.AddPlate(b); manager.AddPlate(c); manager.AddPlate(d);
+        REQUIRE(manager.RemovePlate("AM51021"));
+        REQUIRE(manager.RemovePlate("AO20198"));
+        REQUIRE(manager.RemovePlate("BM23586"));
+    }
 
-//     SECTION("Remove the same license plate twice") {
-//         LicensePlateManager manager;
-//         LicensePlateInfo *a = new LicensePlateInfo("AQ11001", "Michealer", "Nowaker", "11/11/1920", "Chicago, Illinois", 101, 200, 125) ;
-//         LicensePlateInfo *b = new LicensePlateInfo("AM51021", "Ed", "Sheeran", "01/12/1987", "Mars", 34, 6, 200) ;
-//         LicensePlateInfo *c = new LicensePlateInfo("AO20198", "The", "Weaken", "01/12/1965", "Las Vegas, Neveda",34, 6, 150) ;
-//         LicensePlateInfo *d = new LicensePlateInfo("BM23586", "Post", "Malone",  "07/04/1995", "Syracuse, New York",26, 6.1, 250) ;
-//         manager.AddPlate(a); manager.AddPlate(b); manager.AddPlate(c); manager.AddPlate(d);
-//         REQUIRE(manager.GetPlates().size() == 4);
-//         REQUIRE(manager.RemovePlate("AM51021"));
-//         REQUIRE_FALSE(manager.RemovePlate("AM51021"));
-//         REQUIRE(manager.GetPlates().size() == 3);
-//     }
+    SECTION("Remove the same license plate twice") {
+        LicensePlateInfo b ("AM51021", "Ed", "Sheeran", "01/12/1987", "Mars", 34, 6, 200) ;
+        manager.AddPlate(b);
+        REQUIRE(manager.RemovePlate("AM51021"));
+        REQUIRE_THROWS(manager.RemovePlate("AM51021"));
+    }
 
-//     SECTION("Remove the license plate with the same name") {
-//         LicensePlateManager manager;
-//         LicensePlateInfo *a = new LicensePlateInfo("AQ11001", "Michealer", "Nowaker", "11/11/1920", "Chicago, Illinois", 101, 200, 125) ;
-//         LicensePlateInfo *b = new LicensePlateInfo("AM51021", "Michealer", "Nowaker", "01/12/1987", "Mars", 34, 6, 200) ;
-//         std::string ans = "Plate number: AQ11001\nFirst name: Michealer\nLast name: Nowaker\nDoB: 11/11/1920\nAddress: Chicago, Illinois\nAge: 101\nHeight: 200\nWeight: 125\n";
-//         manager.AddPlate(a); manager.AddPlate(b);
-//         REQUIRE(manager.GetPlates().size() == 2);
-//         REQUIRE(manager.RemovePlate("AM51021"));
-//         REQUIRE(manager.GetPlates().size() == 1);
-//         auto data = manager.GetPlates();
-//         std::ostringstream ss;
-//         ss << data.begin()->second;
-//         REQUIRE(ss.str() == ans);
-//     }
-// }
+    SECTION("Remove the license plate with the same name") {
+        LicensePlateInfo a ("AQ11001", "Michealer", "Nowaker", "11/11/1920", "Chicago, Illinois", 101, 200, 125) ;
+        LicensePlateInfo b ("AM51021", "Michealer", "Nowaker", "01/12/1987", "Mars", 34, 6, 200) ;
+        std::string ans = "Plate number: AQ11001\nFirst name: Michealer\nLast name: Nowaker\nDoB: 11/11/1920\nAddress: Chicago, Illinois\nAge: 101\nHeight: 200\nWeight: 125\n";
+        manager.AddPlate(a); manager.AddPlate(b);
+        REQUIRE(manager.RemovePlate("AM51021"));
+        LicensePlateInfo found = manager.FindLicensePlate("AQ11001");
+        std::ostringstream ss;
+        ss << found;
+        REQUIRE(ss.str() == ans);
+        REQUIRE(manager.RemovePlate("AQ11001"));
+    }
+}
 
+TEST_CASE("Passed plate number is either a valid plate or not a valid plate", "[IsValid()]") {
+    LicensePlateManager manager;
 
+    SECTION("Good format") {
+        //tests for valid plate number
+        LicensePlateInfo good_info ("AQ11011", "Nathan", "Park", "12/21/1221", "201 N Goodwin Ave, Urbana, IL 61801", 18, 7.0, 300);
+        REQUIRE(manager.IsValid(good_info) == true);
+    }
 
-// TEST_CASE("Automatically generated license plates increment correctly from initial_plate_", "[Insertion/Deletion]") {
-//     LicensePlateManager manager;
-//     for(int i = 0; i < 100; i++) {
-//         manager.GeneratePlate(std::to_string(i), "Nowakest", 999, "DOB", "LOCATION", 200, 125);
-//     }
+    SECTION("Bad format - > 3 letters") {
+        LicensePlateInfo bad_info = LicensePlateInfo("AAA011Z", "Nemo", "Fish", "12/21/1221", "201 N Goodwin Ave, Urbana, IL 61801", 18, 1, 4);
+        REQUIRE_FALSE(manager.IsValid(bad_info));
+    }
 
-//     bool correct = true;
-//     for(int i = 0; i < 100; i++) {
-//         int num = 11002;
-//         std::string number = "AQ";
-//         number += std::to_string(num + i);
-//         LicensePlateInfo * info = manager.FindLicensePlate(number);
-//         if(info->first_name.compare(std::to_string(i)) != 0) {
-//             correct = false;
-//             break;
-//         }
-//     }
-//     REQUIRE(correct);
-// }
+    SECTION("Bad format - invalid letters") {
+        LicensePlateInfo bad_info = LicensePlateInfo("AAAZ$H^", "Nemo", "Fish", "12/21/1221", "201 N Goodwin Ave, Urbana, IL 61801", 18, 1, 4);
+        REQUIRE_FALSE(manager.IsValid(bad_info));
+    }
 
-// TEST_CASE("Automatically generated license plates do not overwrite existing ones", "[Insertion/Deletion]") {
-//     LicensePlateManager manager;
-//     manager.CreatePlate("AQ11009", "Michealer", "Nowaker", 101, "11/11/1920", "Chicago, Illinois", 200, 125);
-//     manager.CreatePlate("AQ11010", "Michealer", "Nowaker", 101, "11/11/1920", "Chicago, Illinois", 200, 125);
-//     manager.CreatePlate("AQ11011", "Michealer", "Nowaker", 101, "11/11/1920", "Chicago, Illinois", 200, 125);
-
-//     for(int i = 0; i < 10; i++) {
-//         manager.GeneratePlate("Michealest", "Nowakest", 999, "DOB", "LOCATION", 200, 125);
-//     }
-
-//     LicensePlateInfo * info = manager.FindLicensePlate("AQ11009");
-//     REQUIRE(info->first_name.compare("Michealer") == 0);
-//     info = manager.FindLicensePlate("AQ11010");
-//     REQUIRE(info->first_name.compare("Michealer") == 0);
-//     info = manager.FindLicensePlate("AQ11011");
-//     REQUIRE(info->first_name.compare("Michealer") == 0);
-// }
-
-// TEST_CASE("Passed in plate number is a valid plate || Passed in plate number is not a valid plate", "[IsValid()]") {
-//     LicensePlateManager manager;
-
-//     //tests for valid plate number
-//     LicensePlateInfo* good_info = new LicensePlateInfo("AQ11011", "Nathan", "Park", "12/21/1221", "201 N Goodwin Ave, Urbana, IL 61801", 18, 7.0, 300);
-//     REQUIRE(manager.IsValid(good_info) == true);
-
-//     //tests for invalid plate number
-//     LicensePlateInfo* bad_info = new LicensePlateInfo("A!20111", "Nemo", "Fish", "12/21/1221", "201 N Goodwin Ave, Urbana, IL 61801", 18, 1, 4);
-//     REQUIRE(manager.IsValid(bad_info) == false);
-
-//     SECTION("Bad format - > 3 letters") {
-//         LicensePlateInfo bad_info = LicensePlateInfo("AAA011Z", "Nemo", "Fish", "12/21/1221", "201 N Goodwin Ave, Urbana, IL 61801", 18, 1, 4);
-//         REQUIRE_FALSE(manager.IsValid(&bad_info));
-//     }
-
-//     SECTION("Bad format - invalid letters") {
-//         LicensePlateInfo bad_info = LicensePlateInfo("AAAZ$H^", "Nemo", "Fish", "12/21/1221", "201 N Goodwin Ave, Urbana, IL 61801", 18, 1, 4);
-//         REQUIRE_FALSE(manager.IsValid(&bad_info));
-//     }
-
-//     SECTION("Bad format - 4 numbers") {
-//         LicensePlateInfo bad_info = LicensePlateInfo("AA2221@", "Nemo", "Fish", "12/21/1221", "201 N Goodwin Ave, Urbana, IL 61801", 18, 1, 4);
-//         REQUIRE_FALSE(manager.IsValid(&bad_info));
-//     }
+    SECTION("Bad format - 4 numbers") {
+        LicensePlateInfo bad_info = LicensePlateInfo("AA2221@", "Nemo", "Fish", "12/21/1221", "201 N Goodwin Ave, Urbana, IL 61801", 18, 1, 4);
+        REQUIRE_FALSE(manager.IsValid(bad_info));
+    }
     
-//     SECTION("Bad format - missing a number") {
-//         LicensePlateInfo bad_info = LicensePlateInfo("AS2221", "Nemo", "Fish", "12/21/1221", "201 N Goodwin Ave, Urbana, IL 61801", 18, 1, 4);
-//         REQUIRE_FALSE(manager.IsValid(&bad_info));
-//     }
+    SECTION("Bad format - missing a number") {
+        LicensePlateInfo bad_info = LicensePlateInfo("AS2221", "Nemo", "Fish", "12/21/1221", "201 N Goodwin Ave, Urbana, IL 61801", 18, 1, 4);
+        REQUIRE_FALSE(manager.IsValid(bad_info));
+    }
 
-//     SECTION("Bad format - missing a letter") {
-//         LicensePlateInfo bad_info = LicensePlateInfo("A72221", "Nemo", "Fish", "12/21/1221", "201 N Goodwin Ave, Urbana, IL 61801", 18, 1, 4);
-//         REQUIRE_FALSE(manager.IsValid(&bad_info));
-//     }
+    SECTION("Bad format - missing a letter") {
+        LicensePlateInfo bad_info = LicensePlateInfo("A72221", "Nemo", "Fish", "12/21/1221", "201 N Goodwin Ave, Urbana, IL 61801", 18, 1, 4);
+        REQUIRE_FALSE(manager.IsValid(bad_info));
+    }
 
-//     SECTION("Bad format - > 7 characters") {
-//         LicensePlateInfo bad_info = LicensePlateInfo("AA222111", "Nemo", "Fish", "12/21/1221", "201 N Goodwin Ave, Urbana, IL 61801", 18, 1, 4);
-//         REQUIRE_FALSE(manager.IsValid(&bad_info));
-//     }
+    SECTION("Bad format - > 7 characters") {
+        LicensePlateInfo bad_info = LicensePlateInfo("AA222111", "Nemo", "Fish", "12/21/1221", "201 N Goodwin Ave, Urbana, IL 61801", 18, 1, 4);
+        REQUIRE_FALSE(manager.IsValid(bad_info));
+    }
 
-//     SECTION("Invalid age, weight, height - no last name, first name, address, dob") {
-//         LicensePlateInfo a = LicensePlateInfo("AA72221", "Nemo", "Fish", "12/21/1221", "201 N Goodwin Ave, Urbana, IL 61801", 17, 1, 4);
-//         REQUIRE_FALSE(manager.IsValid(&a));
-//         LicensePlateInfo b = LicensePlateInfo("AA72221", "", "Fish", "12/21/1221", "201 N Goodwin Ave, Urbana, IL 61801", 19, 1, 4);
-//         REQUIRE_FALSE(manager.IsValid(&b));
-//         LicensePlateInfo c = LicensePlateInfo("AA72221", "Nemo", "", "12/21/1221", "201 N Goodwin Ave, Urbana, IL 61801", 22, 1, 4);
-//         REQUIRE_FALSE(manager.IsValid(&c));
-//         LicensePlateInfo d = LicensePlateInfo("AA72221", "Nemo", "Fish", "", "201 N Goodwin Ave, Urbana, IL 61801", 123, 1, 4);
-//         REQUIRE_FALSE(manager.IsValid(&d));
-//         LicensePlateInfo e = LicensePlateInfo("AA72221", "Nemo", "Fish", "12/21/1221", "", 173, 1, 4);
-//         REQUIRE_FALSE(manager.IsValid(&e));
-//         LicensePlateInfo f = LicensePlateInfo("AA72221", "Nemo", "Fish", "12/21/1221", "201 N Goodwin Ave, Urbana, IL 61801", 13, -1, 4);
-//         REQUIRE_FALSE(manager.IsValid(&f));
-//         LicensePlateInfo g = LicensePlateInfo("AA72221", "", "Fish", "12/21/1221", "201 N Goodwin Ave, Urbana, IL 61801", 17, 1, -2);
-//         REQUIRE_FALSE(manager.IsValid(&g));
-//     }
+    SECTION("Invalid age, weight, height - no last name, first name, address, dob") {
+        LicensePlateInfo a = LicensePlateInfo("AA72221", "Nemo", "Fish", "12/21/1221", "201 N Goodwin Ave, Urbana, IL 61801", 17, 1, 4);
+        REQUIRE_FALSE(manager.IsValid(a));
+        LicensePlateInfo b = LicensePlateInfo("AA72221", "", "Fish", "12/21/1221", "201 N Goodwin Ave, Urbana, IL 61801", 19, 1, 4);
+        REQUIRE_FALSE(manager.IsValid(b));
+        LicensePlateInfo c = LicensePlateInfo("AA72221", "Nemo", "", "12/21/1221", "201 N Goodwin Ave, Urbana, IL 61801", 22, 1, 4);
+        REQUIRE_FALSE(manager.IsValid(c));
+        LicensePlateInfo d = LicensePlateInfo("AA72221", "Nemo", "Fish", "", "201 N Goodwin Ave, Urbana, IL 61801", 123, 1, 4);
+        REQUIRE_FALSE(manager.IsValid(d));
+        LicensePlateInfo e = LicensePlateInfo("AA72221", "Nemo", "Fish", "12/21/1221", "", 173, 1, 4);
+        REQUIRE_FALSE(manager.IsValid(e));
+        LicensePlateInfo f = LicensePlateInfo("AA72221", "Nemo", "Fish", "12/21/1221", "201 N Goodwin Ave, Urbana, IL 61801", 13, -1, 4);
+        REQUIRE_FALSE(manager.IsValid(f));
+        LicensePlateInfo g = LicensePlateInfo("AA72221", "", "Fish", "12/21/1221", "201 N Goodwin Ave, Urbana, IL 61801", 17, 1, -2);
+        REQUIRE_FALSE(manager.IsValid(g));
+    }
 
-// }
+}
 
-// TEST_CASE("Passed in plate number is a unique plate || Passed in plate number is not a unique plate", "[IsUnique()]") {
-//     LicensePlateManager manager;
+TEST_CASE("Passed in plate number is a unique plate || Passed in plate number is not a unique plate", "[IsUniqueNumber()]") {
+    LicensePlateManager manager("data/license_plate.db");
 
-//     manager.CreatePlate("CD80519", "Michael", "Nowak", 34, "03/21/1987", "Round Rock, Texas, United States", 6.1, 180);
-//     manager.CreatePlate("AQ20111", "Nemo", "Fish", 18, "12/21/1221", "201 N Goodwin Ave, Urbana, IL 61801", 1, 4);
-//     manager.CreatePlate("AQ11010", "Michaeler", "Bowaker", 34, "03/22/1987", "Square Rock, Texas, United States", 6.1, 180);
-//     //tests for unique plate number
-//     LicensePlateInfo* unique = new LicensePlateInfo("AQ11011", "Nathan", "Park", "12/21/1221", "201 N Goodwin Ave, Urbana, IL 61801", 18, 7.0, 300);
-//     REQUIRE(manager.IsUnique(unique) == true);
+    SECTION("Is Unique") {
+        REQUIRE(manager.IsUniqueNumber("AQ20111"));
+    }
+    
+    SECTION("Is Not Unique") {
+        REQUIRE_FALSE(manager.IsUniqueNumber("AQ12345"));
+    }
+}
 
-//     //tests for not unique plate number
-//     LicensePlateInfo* not_unique = new LicensePlateInfo("AQ20111", "Nemo", "Fish", "12/21/1221", "201 N Goodwin Ave, Urbana, IL 61801", 18, 1, 4);
-//     REQUIRE(manager.IsUnique(not_unique) == false);
-// }
+TEST_CASE("Manager Successfully Found the Info By Plate Number", "[FindLicensePlate()]") {
+    LicensePlateManager manager("data/license_plate.db");
+    std::ostringstream ss;
 
-// TEST_CASE("Manager Successfully Found the Info By Plate Number", "[FindLicensePlate()]") {
-//     LicensePlateManager manager;
-//     manager.CreatePlate("AQ11001", "Michealer", "Nowaker", 101, "11/11/1920", "Chicago, Illinois", 200, 125);
-//     manager.CreatePlate("AQ11011", "Nathan", "Park", 18, "12/21/1221", "201 N Goodwin Ave, Urbana, IL 61801", 7.0, 300);
+    SECTION("Find nonexistent license plate") {
+        REQUIRE_THROWS(manager.FindLicensePlate("HM11234"));
+    }
 
-//     LicensePlateInfo* info = manager.GetPlates()["AQ11001"];
-//     REQUIRE(manager.FindLicensePlate("AQ11001") == info);
+    SECTION("Find invalid license plate") {
+        REQUIRE_THROWS(manager.FindLicensePlate("A"));
+        REQUIRE_THROWS(manager.FindLicensePlate("BB"));
+        REQUIRE_THROWS(manager.FindLicensePlate("AQ1100"));
+        REQUIRE_THROWS(manager.FindLicensePlate("A11101"));
+        REQUIRE_THROWS(manager.FindLicensePlate("1A1101"));
+    }
 
-//     SECTION("Find nonexistent license plate") {
-//         REQUIRE(manager.FindLicensePlate("AQ11002") == nullptr);
-//     }
+    SECTION("Find existent license plate") {
+        // already in database
+        LicensePlateInfo found = manager.FindLicensePlate("CD80519");
+        std::string ans = "Plate number: CD80519\nFirst name: Michael\nLast name: Nowak\nDoB: 03/21/1987\nAddress: Round Rock, Texas, United States\nAge: 34\nHeight: 6.1\nWeight: 180\n";
+        ss << found;
+        REQUIRE(ss.str() == ans);
+    }
+}
 
-//     SECTION("Find invalid license plate") {
-//         REQUIRE(manager.FindLicensePlate("") == nullptr);
-//         REQUIRE(manager.FindLicensePlate("AQ1100") == nullptr);
-//     }
-// }
+TEST_CASE("Manager Successfully Found the Info By Driver's Name", "[FindLicensePlate()]") {
+    LicensePlateManager manager("data/license_plate.db");
+    std::ostringstream ss;
 
-// TEST_CASE("Manager Successfully Found the Info By Driver's Name", "[FindLicensePlate()]") {
-//     LicensePlateManager manager;
-//     std::ostringstream ss;
-//     manager.CreatePlate("AQ11001", "Michealer", "Nowaker", 101, "11/11/1920", "Chicago, Illinois", 200, 125);
-//     manager.CreatePlate("AQ11011", "Nathan", "Park", 18, "12/21/1221", "201 N Goodwin Ave, Urbana, IL 61801", 7, 300);
+    SECTION("Find nonexistent license plate") {
+        REQUIRE_THROWS(manager.FindLicensePlate("Post", "Malone"));
+    }
 
-//     LicensePlateInfo* info = manager.GetPlates()["AQ11011"];
-//     REQUIRE(manager.FindLicensePlate("Nathan", "Park") == info);
+    SECTION("Find invalid license plate") {
+        REQUIRE_THROWS(manager.FindLicensePlate("Post", ""));
+        REQUIRE_THROWS(manager.FindLicensePlate("", "Malone"));
+        REQUIRE_THROWS(manager.FindLicensePlate("", ""));
+    }
 
-//     SECTION("Find nonexistent license plate") {
-//         REQUIRE(manager.FindLicensePlate("Post", "Malone") == nullptr);
-//     }
+    SECTION("Return the first Michael Nowak record") {
+        LicensePlateInfo found = manager.FindLicensePlate("Michael", "Nowak")[0];
+        std::string ans = "Plate number: CD80519\nFirst name: Michael\nLast name: Nowak\nDoB: 03/21/1987\nAddress: Round Rock, Texas, United States\nAge: 34\nHeight: 6.1\nWeight: 180\n";
+        ss << found;
+        REQUIRE(ss.str() == ans);
+    }
 
-//     SECTION("Find invalid license plate") {
-//         REQUIRE(manager.FindLicensePlate("Post", "") == nullptr);
-//         REQUIRE(manager.FindLicensePlate("", "Malone") == nullptr);
-//         REQUIRE(manager.FindLicensePlate("", "") == nullptr);
-//     }
+    SECTION("Return a vector of records") {
+        std::vector<LicensePlateInfo> found = manager.FindLicensePlate("Jimin", "Kim");
+        REQUIRE(found.size() == 4);
+    }
+}
 
-//     SECTION("Return the first Nathan Park record") {
-//         manager.CreatePlate("AQ11012", "Nathan", "Park", 22, "12/21/1222", "203 N Goodwin Ave, Urbana, IL 61801", 7.1, 310);
-//         ss << manager.GetPlates()["AQ11011"];
-//         std::string ans = "Plate number: AQ11011\nFirst name: Nathan\nLast name: Park\nDoB: 12/21/1221\nAddress: 201 N Goodwin Ave, Urbana, IL 61801\nAge: 18\nHeight: 7\nWeight: 300\n";
-//         REQUIRE(ss.str() == ans);
-//     }
-// }
+TEST_CASE("Overloaded << operator for LicensePlateInfo throws the correct error for invalid inputs", "[operator<<]") {
+    LicensePlateInfo info;
+    SECTION("Invalid numerical values for age, height, or weight") {
+        REQUIRE_THROWS_WITH(info << "AQ11010,Michaeler,Bowaker,03/22/1987,\"Square Rock, Texas, United States\",NOTAVALIDAGE,6.1,180", "stoi");
+        REQUIRE_THROWS_WITH(info << "AQ11010,Michaeler,Bowaker,03/22/1987,\"Square Rock, Texas, United States\",123,ASDF,180", "stod");
+        REQUIRE_THROWS_WITH(info << "AQ11010,Michaeler,Bowaker,03/22/1987,\"Square Rock, Texas, United States\",123,6.1,HEIGHT", "stod");
+    }
 
-// TEST_CASE("Sort data", "[Sort()]") {
-//     LicensePlateManager manager;
-//     std::ostringstream ss;
-//     SECTION("Sort empty list") {
-//         REQUIRE(manager.Sort().size() == 0);
-//     }
+    SECTION("Incorrect formatting or incomplete entries") {
+        REQUIRE_THROWS_WITH(info << "", "incomplete entry or invalid formatting");
+        REQUIRE_THROWS_WITH(info << "AQ11010,Michaeler,Bowaker,03/22/1987,\"", "incomplete entry or invalid formatting");
+        REQUIRE_THROWS_WITH(info << "AQ11010,Michaeler,Bowaker,03/22/1987,\"Square", "incomplete entry or invalid formatting");
+        REQUIRE_THROWS_WITH(info << "AQ11010,Michaeler,Bowaker,03/22/1987,\"Square Rock, Texas, United States\",123,6.1,", "incomplete entry or invalid formatting");
+        REQUIRE_THROWS_WITH(info << "AQ11010,Michaeler,Bowaker,03/22/1987", "incomplete entry or invalid formatting");
+        REQUIRE_THROWS_WITH(info << "AQ11010 Michaeler Bowaker,03/22/1987 \"Square Rock, Texas, United States\" 123 6.1 180", "incomplete entry or invalid formatting");
+    }
 
-//     SECTION("Sort a single record") {
-//         manager.CreatePlate("AQ11011", "Nathan", "Park", 18, "12/21/1221", "201 N Goodwin Ave, Urbana, IL 61801", 7, 300);
-//         std::string ans = "AQ11011,Nathan,Park,12/21/1221,201 N Goodwin Ave, Urbana, IL 61801,18,7,300\n";
-//         std::vector<std::pair<PlateNumber, LicensePlateInfo*>> sorted = manager.Sort();
-//         REQUIRE(sorted.size() == 1);
-//         ss << sorted;
-//         REQUIRE(ss.str() == ans);
-//     }
+}
 
-//     SECTION("Sort multiple records") {
-//         manager.CreatePlate("AQ11011", "Nathan", "Stark", 18, "12/21/1221", "201 N Goodwin Ave, Urbana, IL 61801", 7, 300);
-//         manager.LoadPlates("data/data_info.csv");
-//         std::string ans1 = "AQ11010,Michaeler,Bowaker,03/22/1987,Square Rock, Texas, United States,34,6.1,180\n";
-//         std::string ans2 = "CD80519,Michael,Nowak,03/21/1987,Round Rock, Texas, United States,34,6.1,180\n";
-//         std::string ans3 = "AQ11012,Nathan,Park,11/22/2021,106 E University Ave, Urbana, IL 61801,21,6.6,100\n";
-//         std::string ans4 = "AQ11011,Nathan,Stark,12/21/1221,201 N Goodwin Ave, Urbana, IL 61801,18,7,300\n";
-//         std::string ans = ans1 + ans2 + ans3 + ans4;
-//         std::vector<std::pair<PlateNumber, LicensePlateInfo*>> sorted = manager.Sort();
-//         REQUIRE(sorted.size() == 4);
-//         ss << sorted;
-//         REQUIRE(ss.str() == ans);
-//     }
-// }
-
-// TEST_CASE("Overloaded << operator for LicensePlateInfo throws the correct error for invalid inputs", "[FindLicensePlate()]") {
-//     LicensePlateInfo info;
-//     SECTION("Invalid numerical values for age, height, or weight") {
-//         REQUIRE_THROWS_WITH(info << "AQ11010,Michaeler,Bowaker,03/22/1987,\"Square Rock, Texas, United States\",NOTAVALIDAGE,6.1,180", "stoi");
-//         REQUIRE_THROWS_WITH(info << "AQ11010,Michaeler,Bowaker,03/22/1987,\"Square Rock, Texas, United States\",123,ASDF,180", "stod");
-//         REQUIRE_THROWS_WITH(info << "AQ11010,Michaeler,Bowaker,03/22/1987,\"Square Rock, Texas, United States\",123,6.1,HEIGHT", "stod");
-//     }
-
-//     SECTION("Incorrect formatting or incomplete entries") {
-//         REQUIRE_THROWS_WITH(info << "", "incomplete entry or invalid formatting");
-//         REQUIRE_THROWS_WITH(info << "AQ11010,Michaeler,Bowaker,03/22/1987,\"", "incomplete entry or invalid formatting");
-//         REQUIRE_THROWS_WITH(info << "AQ11010,Michaeler,Bowaker,03/22/1987,\"Square", "incomplete entry or invalid formatting");
-//         REQUIRE_THROWS_WITH(info << "AQ11010,Michaeler,Bowaker,03/22/1987,\"Square Rock, Texas, United States\",123,6.1,", "incomplete entry or invalid formatting");
-//         REQUIRE_THROWS_WITH(info << "AQ11010,Michaeler,Bowaker,03/22/1987", "incomplete entry or invalid formatting");
-//         REQUIRE_THROWS_WITH(info << "AQ11010 Michaeler Bowaker,03/22/1987 \"Square Rock, Texas, United States\" 123 6.1 180", "incomplete entry or invalid formatting");
-//     }
-
-// }
-
-// TEST_CASE("Scan license plate number from an image", "[ScanPlate()]") {
-//     LicensePlateManager manager;
-//     CHECK(manager.ScanPlate("data/plate.png").compare("CD80519") == 0);
-//     CHECK(manager.ScanPlate("data/plate2.png").compare("AH69887") == 0);
-//     CHECK(manager.ScanPlate("data/plate3.png").compare("AK36398") == 0);
-//     CHECK(manager.ScanPlate("data/plate4.png").compare("AG75117") == 0);
-// }
+TEST_CASE("Scan license plate number from an image", "[ScanPlate()]") {
+    LicensePlateManager manager;
+    CHECK(manager.ScanPlate("data/plate.png").compare("CD80519") == 0);
+    CHECK(manager.ScanPlate("data/plate2.png").compare("AH69887") == 0);
+    CHECK(manager.ScanPlate("data/plate3.png").compare("AK36398") == 0);
+    CHECK(manager.ScanPlate("data/plate4.png").compare("AG75117") == 0);
+}
 
 // TEST_CASE("Updates driver's plate number", "[UpdateLicensePlate()]") {
 //     LicensePlateManager manager;

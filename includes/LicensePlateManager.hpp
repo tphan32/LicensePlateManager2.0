@@ -156,6 +156,7 @@ class LicensePlateManager {
         */
         std::string ScanPlate(const std::string& filename);
 
+        std::size_t GetSize();
 
     private:
         PlateNumber initial_serial_ = "AQ11001";                 //The initial serial number to generate plate numbers from
